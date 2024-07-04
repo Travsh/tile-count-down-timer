@@ -1,0 +1,38 @@
+/* CountdownTimer.css */
+.countdown-timer {
+    max-width: 400px;
+    margin: auto;
+  }
+  
+  .input-timer {
+    border: 1px solid #2d3748; /* Tailwind's border-gray-700 */
+    background-color: #2d3748; /* Tailwind's bg-gray-800 */
+    color: white;
+    padding: 8px;
+    text-align: center;
+    width: 60px;
+    border-radius: 4px;
+  }
+  
+  .btn-start, .btn-stop, .btn-reset {
+    padding: 8px 16px;
+    border-radius: 4px;
+    color: white;
+  }
+  
+  .btn-start {
+    background-color: #4299e1; /* Tailwind's bg-blue-500 */
+  }
+  
+  .btn-start:disabled {
+    background-color: #cbd5e0; /* Tailwind's bg-gray-300 */
+  }
+  
+  .btn-stop {
+    background-color: #f56565; /* Tailwind's bg-red-500 */
+  }
+  
+  .btn-reset {
+    background-color: #718096; /* Tailwind's bg-gray-500 */
+  }
+  
