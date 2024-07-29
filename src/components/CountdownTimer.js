@@ -10,6 +10,8 @@ const CountdownTimer = () => {
   const [tileColor, setTileColor] = useState('#009DFF');
   const [tiles, setTiles] = useState([]);
   const endTimeRef = useRef(null);
+  const randomOrder = useRef([]);
+  const totalSecondsRef = useRef(0);
 
   const rows = 10;
   const cols = 10;
@@ -20,6 +22,19 @@ const CountdownTimer = () => {
       .fill(null)
       .map(() => Array(cols).fill(tileColor));
     setTiles(initialTiles);
+
+    // Create and shuffle the list of [r, c] coordinates
+    const order = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        order.push([r, c]);
+      }
+    }
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    randomOrder.current = order;
   }, [tileColor]);
 
   useEffect(() => {
@@ -29,21 +44,16 @@ const CountdownTimer = () => {
         const remainingTime = Math.max(0, Math.floor((endTimeRef.current - currentTime) / 1000));
         setTime(remainingTime);
 
-        const percentage = remainingTime / (hours * 3600 + minutes * 60 + seconds);
-        const blackTilesCount = Math.floor(totalTiles * (1 - percentage));
+        const elapsedTime = totalSecondsRef.current - remainingTime;
+        const blackTilesCount = Math.floor(totalTiles * (elapsedTime / totalSecondsRef.current));
 
         const updatedTiles = Array(rows)
           .fill(null)
           .map(() => Array(cols).fill(tileColor));
 
-        let count = 0;
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            if (count < blackTilesCount) {
-              updatedTiles[r][c] = 'black';
-              count++;
-            }
-          }
+        for (let i = 0; i < blackTilesCount; i++) {
+          const [r, c] = randomOrder.current[i];
+          updatedTiles[r][c] = 'black';
         }
 
         setTiles(updatedTiles);
@@ -59,11 +69,12 @@ const CountdownTimer = () => {
 
       return () => clearInterval(interval);
     }
-  }, [isRunning, hours, minutes, seconds, tileColor, totalTiles]);
+  }, [isRunning, tileColor, totalTiles]);
 
   const startTimer = () => {
     const totalSeconds = hours * 3600 + minutes * 60 + seconds;
     if (totalSeconds > 0) {
+      totalSecondsRef.current = totalSeconds; // Save the total seconds for optimization
       setTime(totalSeconds);
       setIsRunning(true);
       endTimeRef.current = Date.now() + totalSeconds * 1000;
